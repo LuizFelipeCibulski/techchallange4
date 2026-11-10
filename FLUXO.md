@@ -59,7 +59,7 @@ Duas coisas nunca se cruzam: **valor de segredo nunca entra no git**, e
 
 | | Esteira A — infra | Esteira B — aplicação |
 |---|---|---|
-| Dispara com | mudança em `techchallange3/iac/**` | mudança em `techchallange3/docker/<svc>/**` |
+| Dispara com | mudança em `iac/**` | mudança em `docker/<svc>/**` |
 | Workflow | `.github/workflows/terraform.yml` | `.github/workflows/<svc>-service.yml` |
 | Ferramenta | OpenTofu 1.11.6 | Docker + Trivy + ECR |
 | Autentica com | `AWS_TERRAFORM_ROLE_ARN` | `AWS_ROLE_TO_ASSUME` |
@@ -99,7 +99,7 @@ regenere.
 
 ### O arquivo que impede o CI de destruir tudo
 
-`techchallange3/iac/prod.auto.tfvars` é **versionado de propósito**. O runner do
+`iac/prod.auto.tfvars` é **versionado de propósito**. O runner do
 CI não tem o seu `terraform.tfvars` local, e sem esse arquivo o apply usaria os
 defaults de `variables.tf` — que fariam duas coisas graves:
 
@@ -117,7 +117,7 @@ vem da **variable de repositório** `EKS_PUBLIC_ACCESS_CIDRS`, que o
 Trocou de IP? Um comando, sem commit:
 
 ```bash
-gh api -X PATCH repos/LuizFelipeCibulski/DEVOPS-ARQCLOUD/actions/variables/EKS_PUBLIC_ACCESS_CIDRS \
+gh api -X PATCH repos/LuizFelipeCibulski/techchallange4/actions/variables/EKS_PUBLIC_ACCESS_CIDRS \
   -f name=EKS_PUBLIC_ACCESS_CIDRS -f "value=[\"$(curl -s https://checkip.amazonaws.com)/32\"]"
 ```
 
@@ -176,7 +176,7 @@ workflows — não há loop. O `paths` de cada workflow também não cobre
 ### Argo CD: app-of-apps
 
 As Applications deixaram de ser criadas pela UI e viraram arquivos em
-`techchallange3/kubernetes/argocd/apps/`. A `root` aplica o diretório inteiro e
+`kubernetes/argocd/apps/`. A `root` aplica o diretório inteiro e
 gerencia a si mesma.
 
 Todas com `automated: {prune: true, selfHeal: true}` — o git é a verdade
@@ -316,7 +316,7 @@ devolve credencial temporária. O secret `AWS_ROLE_TO_ASSUME` guarda só um ARN 
 não é segredo de verdade. Quem protege é a *trust policy*:
 
 ```
-repo:LuizFelipeCibulski/DEVOPS-ARQCLOUD:ref:refs/heads/main
+repo:LuizFelipeCibulski/techchallange4:ref:refs/heads/main
 ```
 
 Isso casa com o `if: github.ref == 'refs/heads/main'` dos workflows: **um PR de
@@ -363,7 +363,7 @@ Ovo e galinha: quem cria a role do Terraform é o Terraform. Resolve-se com um
 apply local, e daí em diante o pipeline se sustenta.
 
 ```bash
-cd techchallange3/iac
+cd iac
 
 # 1. Cria as roles IRSA, os secrets e a role do próprio pipeline.
 tofu init
@@ -396,14 +396,14 @@ kubectl get applications -n argocd -w
 
 ## 9. Operação do dia a dia
 
-**Mudou código de um serviço** → push em `techchallange3/docker/<svc>/`. O
+**Mudou código de um serviço** → push em `docker/<svc>/`. O
 pipeline testa, escaneia, publica no ECR, reescreve a tag e commita. O Argo CD
 sincroniza em até 3 minutos. Nada a fazer à mão.
 
-**Mudou infraestrutura** → push em `techchallange3/iac/`. O plan roda e comenta
+**Mudou infraestrutura** → push em `iac/`. O plan roda e comenta
 no PR; o apply espera sua aprovação em *Settings → Environments → production*.
 
-**Mudou manifesto do Kubernetes** → push em `techchallange3/kubernetes/<svc>/`.
+**Mudou manifesto do Kubernetes** → push em `kubernetes/<svc>/`.
 O Argo CD aplica. Nenhum pipeline roda (é GitOps puro).
 
 **Rodar a mesma imagem de novo** não funciona: os repositórios ECR são

@@ -300,7 +300,7 @@ da role, e é ela que o módulo `modules/github-oidc` cria.
 A condição que importa na trust policy é o claim `sub`:
 
 ```
-repo:LuizFelipeCibulski/DEVOPS-ARQCLOUD:ref:refs/heads/main
+repo:LuizFelipeCibulski/techchallange4:ref:refs/heads/main
 ```
 
 Isso é o que impede qualquer outro repositório do GitHub de assumir a sua role.
@@ -318,7 +318,7 @@ Em `terraform.tfvars`:
 ```hcl
 is_academy         = false
 enable_github_oidc = true
-github_repository  = "LuizFelipeCibulski/DEVOPS-ARQCLOUD"
+github_repository  = "LuizFelipeCibulski/techchallange4"
 
 # O provider OIDC do GitHub é único por conta. Confira antes:
 #   aws iam list-open-id-connect-providers
@@ -348,7 +348,7 @@ apply criar uma segunda**. Aponte o nome e importe:
 
 ```hcl
 enable_github_oidc          = true
-github_repository           = "LuizFelipeCibulski/DEVOPS-ARQCLOUD"
+github_repository           = "LuizFelipeCibulski/techchallange4"
 create_github_oidc_provider = false
 github_oidc_role_name       = "github-actions-ecr-push"
 ```

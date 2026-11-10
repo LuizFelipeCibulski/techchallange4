@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Grafana (alerta Firing) --webhook--> self-healer --PATCH--> Deployment
 #
-# O código está em techchallange4/docker/self-healer/app.py. Aqui ficam:
+# O código está em docker/self-healer/app.py. Aqui ficam:
 #   - identidade (ServiceAccount) e PERMISSÕES mínimas (RBAC)
 #   - o Deployment/Service
 #   - o ExternalSecret com o token do webhook e o webhook do Discord

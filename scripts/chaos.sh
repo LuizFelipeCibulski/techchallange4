@@ -2,9 +2,9 @@
 # =====================================================================
 # Injeção de falha no auth-service - "A Prova Real" do vídeo
 # ---------------------------------------------------------------------
-#   ./techchallange4/scripts/chaos.sh on [taxa]   # padrão 0.5 = 50% de HTTP 500
-#   ./techchallange4/scripts/chaos.sh off
-#   ./techchallange4/scripts/chaos.sh status
+#   ./scripts/chaos.sh on [taxa]   # padrão 0.5 = 50% de HTTP 500
+#   ./scripts/chaos.sh off
+#   ./scripts/chaos.sh status
 #
 # Como funciona: POST /admin/chaos (protegido pela MASTER_KEY) liga um
 # middleware que devolve 500 numa fração das requisições. O estado fica

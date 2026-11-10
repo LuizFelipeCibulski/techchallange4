@@ -11,7 +11,7 @@ para **replicar em qualquer cluster**.
 > Firing + PagerDuty + Discord + self-healer em 1m44s → pod novo em 1m59s →
 > alerta Normal em **4m18s**, sem intervenção humana.
 
-> Base: a fase 3 (`techchallange3/`) foi copiada para `techchallange4/` e
+> Base: a fase 3 (`techchallange3/`) foi copiada para este repositório (antes `techchallange4/` no monorepo) e
 > evoluída. Arquitetura geral, secrets, GitOps e ondas continuam valendo, e
 > estão em [`ARQUITETURA.md`](ARQUITETURA.md). Aqui está só o que a fase 4 muda.
 
@@ -383,7 +383,7 @@ Contas: New Relic (free), PagerDuty (free), um servidor Discord seu.
 
 ### 10.2 Infraestrutura (Terraform/OpenTofu)
 ```bash
-cd techchallange4/iac
+cd iac
 ./bootstrap-backend.sh                  # bucket S3 + lock DynamoDB do state (uma vez por conta)
 echo "public_access_cidrs = [\"$(curl -s https://checkip.amazonaws.com)/32\"]" > terraform.tfvars
 tofu init
@@ -400,14 +400,14 @@ cd ../..
 3. **Discord**: no canal → ⚙️ *Editar canal* → *Integrações* → *Webhooks* →
    *Novo webhook* → **Copiar URL**.
 ```bash
-./techchallange4/scripts/set-observability-secrets.sh     # pede os 3 valores (entrada oculta)
+./scripts/set-observability-secrets.sh     # pede os 3 valores (entrada oculta)
 ```
 O script também gera a senha do Grafana e o token do self-healer.
 
 ### 10.4 CI/CD no modo Academy
 ```bash
 # Lab -> AWS Details -> AWS CLI -> Show -> colar num arquivo
-./techchallange4/update-secrets-aws.sh creds.txt    # grava as 3 chaves + AWS_MODE=academy
+./update-secrets-aws.sh creds.txt    # grava as 3 chaves + AWS_MODE=academy
 gh variable set EKS_PUBLIC_ACCESS_CIDRS --body "[\"$(curl -s https://checkip.amazonaws.com)/32\"]"
 git push origin main          # 6 pipelines: build, lint, SAST, SCA, Trivy, push ECR, commit da tag
 ```
@@ -417,23 +417,23 @@ git push origin main          # 6 pipelines: build, lint, SAST, SCA, Trivy, push
 ```bash
 kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.0/standard-install.yaml
 helm upgrade --install traefik traefik/traefik -n traefik --create-namespace \
-  -f techchallange4/kubernetes/traefik/values.yaml --wait
+  -f kubernetes/traefik/values.yaml --wait
 
 kubectl create namespace argocd
 kubectl apply -n argocd --server-side --force-conflicts \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.rootpath":"/argocd"}}'
 kubectl rollout restart deployment argocd-server -n argocd
-kubectl apply -f techchallange4/kubernetes/argocd/ingressroute.yaml
-kubectl apply -f techchallange4/kubernetes/metrics-server/deploment.yaml   # HPA precisa
+kubectl apply -f kubernetes/argocd/ingressroute.yaml
+kubectl apply -f kubernetes/metrics-server/deploment.yaml   # HPA precisa
 ```
 
 ### 10.6 GitOps: uma linha sobe tudo
 ```bash
-kubectl apply -f techchallange4/kubernetes/argocd/apps/root.yaml
+kubectl apply -f kubernetes/argocd/apps/root.yaml
 kubectl get applications -n argocd -w
 # depois que os namespaces das apps existirem: rotas públicas e strip-prefix
-kubectl apply -f techchallange4/kubernetes/traefik/middleware.yaml -f techchallange4/kubernetes/traefik/ingressroute.yaml
+kubectl apply -f kubernetes/traefik/middleware.yaml -f kubernetes/traefik/ingressroute.yaml
 ```
 Ondas: `-20` ESO/KEDA → `-10` ClusterSecretStore → `-8` config da observabilidade
 → `-6` Prometheus/Grafana e Loki → `-5` OTel Collector → `20` auth → `30` flag/targeting
@@ -445,7 +445,7 @@ ELB=$(kubectl get svc -n traefik traefik -o jsonpath='{.status.loadBalancer.ingr
 echo "Grafana: https://$ELB/grafana   Argo CD: https://$ELB/argocd"
 kubectl get pods -n observability                # kps-*, loki-0, otel-collector-agent-* (1 por nó)
 kubectl get externalsecret -A                    # todos SecretSynced
-./techchallange4/scripts/gerar-trafego.sh        # deixe rodando
+./scripts/gerar-trafego.sh        # deixe rodando
 ```
 No Grafana: *Dashboards → ToggleMaster → Saúde do Ecossistema*. Em *Alerting →
 Contact points*, use **Test** em cada um: chega no Discord e abre incidente no PagerDuty.
@@ -453,11 +453,11 @@ Contact points*, use **Test** em cada um: chega no Discord e abre incidente no P
 ### 10.8 A prova real
 ```bash
 # terminal 1
-./techchallange4/scripts/gerar-trafego.sh
+./scripts/gerar-trafego.sh
 # terminal 2
 kubectl get pods -n auth-service -w
 # terminal 3
-./techchallange4/scripts/chaos.sh on 0.5
+./scripts/chaos.sh on 0.5
 kubectl logs -n self-healing deploy/self-healer -f
 ```
 Linha do tempo esperada: **~1 min** com 5xx > 5% → *Pending* → *Firing* no Grafana
@@ -466,7 +466,7 @@ Linha do tempo esperada: **~1 min** com 5xx > 5% → *Pending* → *Firing* no G
 → 5xx cai para 0 → alerta *Normal*, incidente resolvido no PagerDuty.
 
 ### 10.9 Checklist para outro cluster
-- [ ] Trocar `198518420325` (conta) nos manifests: `grep -rn 198518420325 techchallange4/kubernetes`
+- [ ] Trocar `198518420325` (conta) nos manifests: `grep -rn 198518420325 kubernetes`
 - [ ] Trocar o `repoURL` das Applications se o repositório for outro
 - [ ] Conta normal? `is_academy=false` + devolver as anotações IRSA
 - [ ] Conta EU no New Relic? endpoint `https://otlp.eu01.nr-data.net`

@@ -17,8 +17,8 @@ spec:
       helm:
         releaseName: otel-collector
         valueFiles:
-          - $values/techchallange4/kubernetes/observability/values/otel-collector.yaml
-    - repoURL: https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD
+          - $values/kubernetes/observability/values/otel-collector.yaml
+    - repoURL: https://github.com/LuizFelipeCibulski/techchallange4
       targetRevision: main
       ref: values
   destination:

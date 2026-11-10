@@ -15,9 +15,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD
+    repoURL: https://github.com/LuizFelipeCibulski/techchallange4
     targetRevision: main
-    path: techchallange4/kubernetes/observability/config
+    path: kubernetes/observability/config
   destination:
     server: https://kubernetes.default.svc
     namespace: observability

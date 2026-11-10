@@ -63,7 +63,7 @@ kubectl get secret argocd-initial-admin-secret -n argocd \
 # argocd/apps/. Aplique a raiz UMA vez; daí em diante, todo push na main
 # atualiza as Applications sozinho (inclusive a própria raiz).
 # =====================================================================
-kubectl apply -f techchallange4/kubernetes/argocd/apps/root.yaml
+kubectl apply -f kubernetes/argocd/apps/root.yaml
 
 # Acompanhe as ondas subindo na ordem:
 #   -20  external-secrets, keda   (instalam as CRDs)

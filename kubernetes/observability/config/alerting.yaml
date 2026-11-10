@@ -78,7 +78,7 @@ data:
             annotations:
               summary: "auth-service respondendo {{ humanizePercentage $$values.A.Value }} das requisições com HTTP 5xx (limite: 5%)"
               description: "flag-service e targeting-service dependem do /validate do auth: com ele falhando, nenhuma flag é avaliada. O self-healer vai executar rollout restart automaticamente."
-              runbook_url: "https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD/blob/main/techchallange4/RUNBOOK.md#auth-service-5xx"
+              runbook_url: "https://github.com/LuizFelipeCibulski/techchallange4/blob/main/RUNBOOK.md#auth-service-5xx"
 
           # ----------------------------------------------------------------
           # WARNING: latência p95 do evaluation-service (caminho quente)
@@ -115,7 +115,7 @@ data:
             annotations:
               summary: "p95 do evaluation-service em {{ humanizeDuration $$values.A.Value }} (limite: 1s)"
               description: "Abra o trace mais lento no New Relic para ver qual dependência (Redis, flag, targeting) está segurando a resposta."
-              runbook_url: "https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD/blob/main/techchallange4/RUNBOOK.md#evaluation-latencia"
+              runbook_url: "https://github.com/LuizFelipeCibulski/techchallange4/blob/main/RUNBOOK.md#evaluation-latencia"
 
           # ----------------------------------------------------------------
           # WARNING: containers reiniciando (CrashLoop) nos microsserviços
@@ -150,7 +150,7 @@ data:
             annotations:
               summary: "Algum container dos microsserviços reiniciou mais de 3 vezes em 15 min"
               description: "Provável CrashLoopBackOff. Veja os logs no Loki: {k8s_namespace_name=~\".+-service\"} |= \"ERRO\""
-              runbook_url: "https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD/blob/main/techchallange4/RUNBOOK.md#crashloop"
+              runbook_url: "https://github.com/LuizFelipeCibulski/techchallange4/blob/main/RUNBOOK.md#crashloop"
 ---
 apiVersion: v1
 kind: ConfigMap

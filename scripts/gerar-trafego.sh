@@ -8,8 +8,8 @@
 #                                 já que o evaluation tem cache de 30s)
 #
 # Uso:
-#   ./techchallange4/scripts/gerar-trafego.sh            # roda até Ctrl+C
-#   DURACAO=300 RPS=5 ./techchallange4/scripts/gerar-trafego.sh
+#   ./scripts/gerar-trafego.sh            # roda até Ctrl+C
+#   DURACAO=300 RPS=5 ./scripts/gerar-trafego.sh
 #
 # Na primeira execução cria a flag "nova-ui" (50% dos usuários) se não existir.
 # =====================================================================

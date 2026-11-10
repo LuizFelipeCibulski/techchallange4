@@ -9,9 +9,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD
+    repoURL: https://github.com/LuizFelipeCibulski/techchallange4
     targetRevision: main
-    path: techchallange4/kubernetes/auth-service
+    path: kubernetes/auth-service
   destination:
     server: https://kubernetes.default.svc
     namespace: auth-service

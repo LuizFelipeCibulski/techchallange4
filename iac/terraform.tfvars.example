@@ -24,7 +24,7 @@ manage_eks_cluster = true # false = so a VPC; voce cria o EKS pelo Console
 # normal (is_academy = false); em Academy use ../update-secrets-aws.sh.
 # ------------------------------------------------------------------
 # enable_github_oidc = true
-# github_repository  = "LuizFelipeCibulski/DEVOPS-ARQCLOUD"
+# github_repository  = "LuizFelipeCibulski/techchallange4"
 #
 # O provider OIDC do GitHub e unico por conta AWS - se
 # `aws iam list-open-id-connect-providers` ja mostrar o

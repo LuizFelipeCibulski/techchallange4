@@ -32,7 +32,7 @@ aws rds describe-db-instances --query "DBInstances[?contains(DBInstanceIdentifie
 # 3. Algum trace com erro no New Relic: APM > auth-service > Errors inbox
 
 # 4. Falha injetada esquecida ligada?
-./techchallange4/scripts/chaos.sh status
+./scripts/chaos.sh status
 ```
 
 Resolveu? O alerta volta a `Normal` e o PagerDuty fecha o incidente sozinho

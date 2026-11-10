@@ -8,7 +8,7 @@
 # Collector, self-healer).
 #
 # Uso (interativo - os valores não aparecem na tela nem no histórico):
-#   ./techchallange4/scripts/set-observability-secrets.sh
+#   ./scripts/set-observability-secrets.sh
 #
 # Ou não-interativo (CI, ou para trocar só um token):
 #   NEW_RELIC_LICENSE_KEY=... PAGERDUTY_ROUTING_KEY=... \

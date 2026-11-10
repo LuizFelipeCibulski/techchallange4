@@ -75,7 +75,7 @@ um bloco de YAML no Collector, sem rebuild de nenhuma imagem.
 EKS via OpenTofu, 5 microsserviços, Argo CD com app-of-apps e *sync waves*,
 External Secrets Operator lendo do AWS Secrets Manager e pipelines DevSecOps com
 Trivy. A fase 4 é uma **camada em cima**. Por isso o primeiro passo foi copiar
-`techchallange3/` para `techchallange4/` e apontar pipelines e Argo CD para a
+`techchallange3/` para `techchallange4/` (hoje este repositório) e apontar pipelines e Argo CD para a
 pasta nova, deixando a entrega da fase 3 intacta.
 
 ---
@@ -128,7 +128,7 @@ Na fase 3, uma única chave ligava Secrets Manager **e** IRSA juntos. No Academy
 isso desligava os dois, e sem Secrets Manager o ESO não tem de onde ler.
 
 ```hcl
-# techchallange4/iac/main.tf
+# iac/main.tf
 locals {
   app_secrets_enabled = var.manage_eks_cluster && var.enable_app_platform  # cofres: sempre
   app_stack_enabled   = local.app_secrets_enabled && !var.is_academy       # IRSA: só conta normal
@@ -189,7 +189,7 @@ pods migram.
 ### 2.5 Backend e execução
 
 ```bash
-cd techchallange4/iac
+cd iac
 ./bootstrap-backend.sh        # bucket S3 com sufixo = ID da conta (nome globalmente único)
 echo "public_access_cidrs = [\"$(curl -s https://checkip.amazonaws.com)/32\"]" > terraform.tfvars
 tofu init && tofu plan        # 60 recursos
@@ -512,7 +512,7 @@ O dashboard não foi desenhado clicando: é gerado por
 `labels: {grafana_dashboard: "1"}`. O sidecar do Grafana vê o ConfigMap e carrega.
 
 ```bash
-python3 techchallange4/scripts/gerar-dashboard.py     # edite os painéis no .py, rode, commite
+python3 scripts/gerar-dashboard.py     # edite os painéis no .py, rode, commite
 ```
 
 **Por que código e não clique:** o dashboard sobrevive à recriação do Grafana
@@ -623,7 +623,7 @@ Canal → ⚙️ → *Integrações* → *Webhooks* → *Novo* → copiar a URL.
 ### 9.4 Gravar tudo
 
 ```bash
-./techchallange4/scripts/set-observability-secrets.sh
+./scripts/set-observability-secrets.sh
 ```
 O script lê com entrada oculta (não fica no histórico), preserva o que já
 existe (ENTER = mantém), gera a senha do Grafana e o token do self-healer, grava
@@ -695,8 +695,8 @@ sources:
   - repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
     targetRevision: 93.0.0
-    helm: { valueFiles: [ $values/techchallange4/kubernetes/observability/values/kube-prometheus-stack.yaml ] }
-  - repoURL: https://github.com/LuizFelipeCibulski/DEVOPS-ARQCLOUD
+    helm: { valueFiles: [ $values/kubernetes/observability/values/kube-prometheus-stack.yaml ] }
+  - repoURL: https://github.com/LuizFelipeCibulski/techchallange4
     ref: values        # ← "$values" aponta para este repositório
 ```
 
@@ -741,7 +741,7 @@ condicional:
 
 | GitHub | Valor |
 |---|---|
-| secrets `AWS_ACCESS_KEY_ID` / `SECRET` / `SESSION_TOKEN` | chaves do Lab (`./techchallange4/update-secrets-aws.sh` lê do `~/.aws/credentials`) |
+| secrets `AWS_ACCESS_KEY_ID` / `SECRET` / `SESSION_TOKEN` | chaves do Lab (`./update-secrets-aws.sh` lê do `~/.aws/credentials`) |
 | variable `AWS_MODE` | `academy` |
 | variable `EKS_PUBLIC_ACCESS_CIDRS` | **seu IP atual**. Com o IP errado, o `terraform.yml` cortaria o seu `kubectl` |
 
@@ -771,34 +771,34 @@ A sequência que foi de fato executada, na ordem:
 
 ```bash
 # 1. Infra
-cd techchallange4/iac && ./bootstrap-backend.sh && tofu init && tofu apply
+cd iac && ./bootstrap-backend.sh && tofu init && tofu apply
 aws eks update-kubeconfig --region us-east-1 --name togglemaster-prod
 
 # 2. Tokens
-./techchallange4/scripts/set-observability-secrets.sh
+./scripts/set-observability-secrets.sh
 
 # 3. Componentes que não podem ser GitOps (quem gerencia o GitOps não é gerenciado por ele)
 kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.0/standard-install.yaml
-helm upgrade --install traefik traefik/traefik -n traefik --create-namespace -f techchallange4/kubernetes/traefik/values.yaml --wait
+helm upgrade --install traefik traefik/traefik -n traefik --create-namespace -f kubernetes/traefik/values.yaml --wait
 kubectl create namespace argocd
 kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.rootpath":"/argocd"}}'
 kubectl rollout restart deployment argocd-server -n argocd
-kubectl apply -f techchallange4/kubernetes/argocd/ingressroute.yaml
-kubectl apply -f techchallange4/kubernetes/metrics-server/deploment.yaml   # sem ele o HPA fica "cpu: <unknown>"
+kubectl apply -f kubernetes/argocd/ingressroute.yaml
+kubectl apply -f kubernetes/metrics-server/deploment.yaml   # sem ele o HPA fica "cpu: <unknown>"
 
 # 4. CI/CD
-./techchallange4/update-secrets-aws.sh
+./update-secrets-aws.sh
 gh api -X PATCH repos/<dono>/<repo>/actions/variables/EKS_PUBLIC_ACCESS_CIDRS -f name=EKS_PUBLIC_ACCESS_CIDRS -f "value=[\"<IP>/32\"]"
 git push origin main                                   # 6 pipelines
 
 # 5. GitOps: uma linha sobe tudo
-kubectl apply -f techchallange4/kubernetes/argocd/apps/root.yaml
-kubectl apply -f techchallange4/kubernetes/traefik/middleware.yaml -f techchallange4/kubernetes/traefik/ingressroute.yaml
+kubectl apply -f kubernetes/argocd/apps/root.yaml
+kubectl apply -f kubernetes/traefik/middleware.yaml -f kubernetes/traefik/ingressroute.yaml
 
 # 6. Validação
-./techchallange4/scripts/gerar-trafego.sh               # tráfego contínuo
-./techchallange4/scripts/chaos.sh on 0.5                # a prova real
+./scripts/gerar-trafego.sh               # tráfego contínuo
+./scripts/chaos.sh on 0.5                # a prova real
 kubectl get pods -n auth-service -w                     # ver o pod ser trocado
 kubectl logs -n self-healing deploy/self-healer -f      # ver a automação agir
 ```

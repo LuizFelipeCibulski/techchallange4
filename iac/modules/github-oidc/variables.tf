@@ -16,7 +16,7 @@ variable "role_name" {
 variable "github_repository" {
   description = <<-EOT
     Repositorio que tem permissao de assumir a role, no formato
-    "dono/repositorio" (ex: "luizcibulski/DEVOPS-ARQCLOUD"). E o valor
+    "dono/repositorio" (ex: "LuizFelipeCibulski/techchallange4"). E o valor
     que entra na condicao `sub` da trust policy - sem isso qualquer
     repositorio do GitHub poderia assumir a role.
   EOT

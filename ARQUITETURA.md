@@ -91,7 +91,7 @@ dita a ordem de partida do sistema (seção 9).
 ## 3. Infraestrutura AWS
 
 Tudo em `us-east-1`, criado por OpenTofu em
-`techchallange3/iac/`.
+`iac/`.
 
 | Módulo | Recurso | Detalhe que importa |
 |---|---|---|
@@ -129,7 +129,7 @@ variable de repositório `EKS_PUBLIC_ACCESS_CIDRS`. O IP não está no git porqu
 muda quando a operadora troca. Trocou? Um comando, sem commit:
 
 ```bash
-gh api -X PATCH repos/LuizFelipeCibulski/DEVOPS-ARQCLOUD/actions/variables/EKS_PUBLIC_ACCESS_CIDRS \
+gh api -X PATCH repos/LuizFelipeCibulski/techchallange4/actions/variables/EKS_PUBLIC_ACCESS_CIDRS \
   -f name=EKS_PUBLIC_ACCESS_CIDRS -f "value=[\"$(curl -s https://checkip.amazonaws.com)/32\"]"
 ```
 
@@ -243,7 +243,7 @@ fazem sentido num Postgres local. **Mudou o schema? Atualize os dois arquivos.**
 
 | | Esteira A — infra | Esteira B — aplicação |
 |---|---|---|
-| Dispara com | `techchallange3/iac/**` | `techchallange3/docker/<svc>/**` |
+| Dispara com | `iac/**` | `docker/<svc>/**` |
 | Workflow | `terraform.yml` | `<svc>-service.yml` (×5) |
 | Ferramenta | OpenTofu 1.11.6 | Docker + Trivy + ECR |
 | Aprovação manual | **sim**, no apply | não |
@@ -359,7 +359,7 @@ O `metrics-server` está instalado — sem ele o HPA por CPU não funciona.
 ## 11. Inventário de arquivos
 
 ```
-techchallange3/
+techchallange4/
 ├── ARQUITETURA.md          ← este documento
 ├── FLUXO.md                ← passo a passo operacional e depuração
 ├── update-secrets-aws.sh   ← só para modo AWS Academy (não usado hoje)

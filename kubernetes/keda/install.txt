@@ -2,10 +2,10 @@
 # KEDA - NÃO instale à mão
 # =====================================================================
 # O KEDA passou a ser gerenciado pelo Argo CD:
-#   techchallange4/kubernetes/argocd/apps/00-keda.yaml
+#   kubernetes/argocd/apps/00-keda.yaml
 #
 # E a permissão de ler a fila SQS passou a ser gerenciada pelo Terraform:
-#   techchallange4/iac/main.tf  ->  module.irsa_keda
+#   iac/main.tf  ->  module.irsa_keda
 #
 # Ou seja, os dois comandos que ficavam aqui saíram de cena:
 #

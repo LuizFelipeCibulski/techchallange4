@@ -6,7 +6,7 @@ O dashboard é código: este script monta o JSON do Grafana e embrulha num
 ConfigMap com o label grafana_dashboard: "1" (lido pelo sidecar do
 Grafana). Mudou um painel? Edite aqui, rode, commite - o Argo CD aplica.
 
-    python3 techchallange4/scripts/gerar-dashboard.py
+    python3 scripts/gerar-dashboard.py
 
 Três blocos, exatamente o que o desafio pede:
   1. Saúde do cluster ......... CPU/memória dos nós e dos serviços, réplicas
@@ -180,7 +180,7 @@ dashboard = {
 }
 
 header = '''# =====================================================================
-# GERADO por techchallange4/scripts/gerar-dashboard.py - não edite à mão.
+# GERADO por scripts/gerar-dashboard.py - não edite à mão.
 # ---------------------------------------------------------------------
 # O label grafana_dashboard: "1" faz o sidecar do Grafana carregar este
 # JSON como dashboard (pasta "ToggleMaster"), sem clique nenhum.
