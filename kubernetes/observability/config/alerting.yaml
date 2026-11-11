@@ -13,7 +13,7 @@
 #
 # ATENÇÃO ao '$': o Grafana interpola variáveis de ambiente (${VAR}) nos
 # arquivos de provisionamento. Por isso os tokens entram como ${...} e,
-# dentro de templates/anotações, um '$' literal precisa ser '$$'.
+# nas anotações use .Values/.Labels (sem '$'): esta versão não desfaz o '$$'.
 # =====================================================================
 apiVersion: v1
 kind: ConfigMap
@@ -76,7 +76,7 @@ data:
               namespace: auth-service
               deployment: auth-service
             annotations:
-              summary: "auth-service respondendo {{ humanizePercentage $$values.A.Value }} das requisições com HTTP 5xx (limite: 5%)"
+              summary: "auth-service respondendo {{ humanizePercentage .Values.A.Value }} das requisições com HTTP 5xx (limite: 5%)"
               description: "flag-service e targeting-service dependem do /validate do auth: com ele falhando, nenhuma flag é avaliada. O self-healer vai executar rollout restart automaticamente."
               runbook_url: "https://github.com/LuizFelipeCibulski/techchallange4/blob/main/RUNBOOK.md#auth-service-5xx"
 
@@ -113,7 +113,7 @@ data:
               team: togglemaster
               service: evaluation-service
             annotations:
-              summary: "p95 do evaluation-service em {{ humanizeDuration $$values.A.Value }} (limite: 1s)"
+              summary: "p95 do evaluation-service em {{ humanizeDuration .Values.A.Value }} (limite: 1s)"
               description: "Abra o trace mais lento no New Relic para ver qual dependência (Redis, flag, targeting) está segurando a resposta."
               runbook_url: "https://github.com/LuizFelipeCibulski/techchallange4/blob/main/RUNBOOK.md#evaluation-latencia"
 
